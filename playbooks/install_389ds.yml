@@ -1,0 +1,15 @@
+---
+- name: Installation 389-DS LDAP Server
+  hosts: ldap_server
+  become: yes
+  tasks:
+    - name: Installer 389-ds-base
+      dnf:
+        name: 389-ds-base
+        state: present
+    - name: Verifier installation
+      command: rpm -q 389-ds-base
+      register: rpm_version
+    - name: Afficher la version
+      debug:
+        msg: "{{ rpm_version.stdout }}"
