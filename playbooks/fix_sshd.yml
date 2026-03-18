@@ -1,0 +1,22 @@
+---
+- name: Assurer SSH operationnel sur tous les nodes
+  hosts: all
+  become: yes
+  tasks:
+    - name: Activer PasswordAuthentication
+      lineinfile:
+        path: /etc/ssh/sshd_config
+        regexp: '^PasswordAuthentication'
+        line: 'PasswordAuthentication yes'
+        backup: yes
+    - name: Activer et demarrer sshd
+      service:
+        name: sshd
+        state: started
+        enabled: yes
+    - name: Verifier sshd
+      command: systemctl is-active sshd
+      register: sshd_status
+    - name: Afficher statut
+      debug:
+        msg: "sshd sur {{ inventory_hostname }} : {{ sshd_status.stdout }}"
