@@ -1,0 +1,21 @@
+- name: Configuration instance 389-DS
+  become: yes
+  tasks:
+    - name: Creer fichier de configuration instance
+        content: |
+          [general]
+          [slapd]
+          root_password = Admin1234!
+          [backend-userroot]
+          sample_entries = yes
+          suffix = dc=lab,dc=local
+    - name: Creer l'instance 389-DS
+      command: /sbin/dscreate from-file /tmp/instance.inf
+      args:
+        creates: /etc/dirsrv/slapd-myldap
+    - name: Verifier que l'instance tourne
+      command: /sbin/dsctl myldap status
+      register: ds_status
+    - name: Afficher le statut
+      debug:
+        msg: "{{ ds_status.stdout }}"
